@@ -1,0 +1,70 @@
+<div class="container">
+  <h2>Pedidos</h2>
+
+  <div *ngIf="loading">Cargando...</div>
+  <div *ngIf="!loading && error">{{ error }}</div>
+
+  <table *ngIf="!loading && !error && orders.length">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>No.</th>
+        <th>Cliente</th>
+        <th>Creado</th>
+        <th># Detalles</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <ng-container *ngFor="let o of orders; trackBy: trackById">
+        <tr>
+          <td>{{ o.id }}</td>
+          <td>{{ o.number }}</td>
+          <td>{{ o.person?.firstName }} {{ o.person?.lastName }}</td>
+          <td>{{ o.createdAt ? (o.createdAt | date:'short') : '—' }}</td>
+          <td style="white-space:nowrap">
+            {{ o.details.length > 0 ? o.details.length : '—' }}
+            <button
+              *ngIf="o.details.length > 0"
+              type="button"
+              (click)="toggle(o.id)"
+              style="margin-left:8px"
+            >
+              {{ isOpen(o.id) ? 'Ocultar' : 'Ver' }}
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="isOpen(o.id)">
+          <td colspan="5">
+            <table class="subgrid">
+              <thead>
+                <tr>
+                  <th>ID Detalle</th>
+                  <th>Item</th>
+                  <th>Cantidad</th>
+                  <th>Precio</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let d of o.details">
+                  <td>{{ d.id }}</td>
+                  <td>
+                    {{ d.itemId }}<ng-container *ngIf="d.itemName"> - {{ d.itemName }}</ng-container>
+                  </td>
+                  <td class="num">{{ d.quantity }}</td>
+                  <td class="num">{{ d.price | number:'1.2-2' }}</td>
+                  <td class="num">{{ d.total | number:'1.2-2' }}</td>
+                </tr>
+                <tr *ngIf="!o.details.length"><td colspan="5">Sin ítems</td></tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && !error && !orders.length">No hay pedidos.</div>
+</div>
