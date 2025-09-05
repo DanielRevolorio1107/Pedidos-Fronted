@@ -11,13 +11,13 @@ export interface OrderDetailDto {
 export interface ApiOrderDto {
   id: number; number: number;
   person: PersonDto | null;
-  orderDetail: OrderDetailDto[] | null;   // nombre real del backend
+  orderDetail: OrderDetailDto[] | null;   
   createdAt?: string; updatedAt?: string | null;
 }
 export interface OrderDto {
   id: number; number: number;
   person: PersonDto | null;
-  details: OrderDetailDto[];              // siempre array en el front
+  details: OrderDetailDto[];              
   createdAt?: string; updatedAt?: string | null;
 }
 export interface OrderCreateDto { number: number; personId: number; }
@@ -25,8 +25,7 @@ export interface OrderCreateDto { number: number; personId: number; }
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private http = inject(HttpClient);
-  private base = '/api/Order'; // Nginx debe proxyear /api -> https://localhost:7136
-
+  private base = '/api/Order'; 
   getAll() {
     return this.http.get<ApiOrderDto[]>(this.base).pipe(
       map(list => (list ?? []).map(o => ({

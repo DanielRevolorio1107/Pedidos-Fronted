@@ -1,48 +1,72 @@
-<div class="container">
-  <h2>Ítems</h2>
+<mat-card>
+  <mat-card-title>Ítems</mat-card-title>
+  <mat-card-subtitle *ngIf="!loading && !error">
+    Total: {{ list.length }} registro{{ list.length === 1 ? '' : 's' }}
+  </mat-card-subtitle>
 
-  <div *ngIf="loading">Cargando...</div>
-  <div *ngIf="!loading && error" class="err">{{ error }}</div>
+  <mat-card-content>
+    <div *ngIf="loading">Cargando…</div>
+    <div *ngIf="!loading && error" class="err">{{ error }}</div>
 
-  <div class="card">
-    <h3>{{ editingId() == null ? 'Nuevo ítem' : 'Editar ítem' }}</h3>
-    <form [formGroup]="form" (ngSubmit)="save()">
-      <div class="row">
-        <div class="col">
-          <label>Nombre</label>
-          <input type="text" formControlName="name">
-          <small class="hint" *ngIf="f.name.touched && f.name.invalid">Requerido</small>
+    <!-- Formulario -->
+    <div class="form mat-elevation-z1">
+      <h3 class="section">{{ editingId() == null ? 'Nuevo ítem' : 'Editar ítem' }}</h3>
+      <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput type="text" formControlName="name">
+          <mat-error *ngIf="f.name.touched && f.name.invalid">Requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Precio</mat-label>
+          <input matInput type="number" formControlName="price" min="0" step="0.01">
+          <mat-error *ngIf="f.price.touched && f.price.invalid">Precio inválido</mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading">
+            <mat-icon>save</mat-icon> Guardar
+          </button>
+          <button mat-stroked-button type="button" (click)="startCreate()">
+            <mat-icon>add</mat-icon> Nuevo
+          </button>
+          <button mat-button type="button" (click)="cancel()">Cancelar</button>
         </div>
-        <div class="col">
-          <label>Precio</label>
-          <input type="number" formControlName="price" min="0" step="0.01">
-          <small class="hint" *ngIf="f.price.touched && f.price.invalid">Precio inválido</small>
-        </div>
-      </div>
-      <div class="actions">
-        <button type="submit" [disabled]="form.invalid || loading">Guardar</button>
-        <button type="button" class="ghost" (click)="startCreate()">Nuevo</button>
-        <button type="button" class="ghost" (click)="cancel()">Cancelar</button>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
 
-  <table class="grid" *ngIf="list.length">
-    <thead>
-      <tr><th>ID</th><th>Nombre</th><th>Precio</th><th></th></tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let it of list">
-        <td>{{ it.id }}</td>
-        <td>{{ it.name }}</td>
-        <td class="right">{{ it.price | number:'1.2-2' }}</td>
-        <td class="right">
-          <button type="button" (click)="startEdit(it)">Editar</button>
-          <button type="button" class="danger" (click)="remove(it.id)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <!-- Tabla -->
+    <div class="table-wrap mat-elevation-z2" *ngIf="list.length; else empty">
+      <table class="material-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th class="num">Precio</th>
+            <th class="right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let it of list">
+            <td>{{ it.id }}</td>
+            <td>{{ it.name }}</td>
+            <td class="num">{{ it.price | number:'1.2-2' }}</td>
+            <td class="right">
+              <button mat-stroked-button color="primary" type="button" (click)="startEdit(it)">
+                <mat-icon>edit</mat-icon> Editar
+              </button>
+              <button mat-button color="warn" type="button" (click)="remove(it.id)">
+                <mat-icon>delete</mat-icon> Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <p *ngIf="!list.length && !loading">No hay ítems.</p>
-</div>
+    <ng-template #empty>
+      <p class="muted">No hay ítems.</p>
+    </ng-template>
+  </mat-card-content>
+</mat-card>

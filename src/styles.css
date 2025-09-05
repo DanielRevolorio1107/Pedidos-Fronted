@@ -1,3 +1,6 @@
-.topbar{display:flex;gap:12px;padding:10px;background:#f5f5f5;border-bottom:1px solid #ddd}
-.topbar a{text-decoration:none;color:#333;font-weight:500}
-.topbar a.active{color:#0b63d1}
+body {
+  background: #f5f5f5;
+  color: #333;
+  font-family: Roboto, Arial, sans-serif;
+  margin: 0;
+}

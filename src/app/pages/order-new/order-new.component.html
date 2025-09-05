@@ -1,110 +1,120 @@
-<div class="container">
-  <h2>Nuevo pedido</h2>
-  <a routerLink="/orders">← Volver al listado</a>
+<mat-card>
+  <mat-card-title>Nuevo pedido</mat-card-title>
+  <mat-card-subtitle>
+    <a routerLink="/orders" mat-button color="primary"><mat-icon>arrow_back</mat-icon> Volver</a>
+  </mat-card-subtitle>
 
-  <div *ngIf="loading">Cargando...</div>
-  <div *ngIf="!loading && error" class="err">{{ error }}</div>
+  <mat-card-content>
+    <div *ngIf="loading">Cargando…</div>
+    <div *ngIf="!loading && error" class="err">{{ error }}</div>
 
-  <form [formGroup]="form" (ngSubmit)="save()" *ngIf="!loading">
-    <!-- Encabezado -->
-    <div class="field">
-      <label for="number">Número</label>
-      <input id="number" type="number" formControlName="number" placeholder="Ej. 1001">
-      <small class="hint" *ngIf="f.number.touched && f.number.invalid">
-        Ingresa un número mayor a 0.
-      </small>
-    </div>
+    <form [formGroup]="form" (ngSubmit)="save()" *ngIf="!loading" class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Número</mat-label>
+        <input matInput type="number" formControlName="number" placeholder="Ej. 1001">
+        <mat-error *ngIf="f.number.touched && f.number.invalid">Ingresa un número mayor a 0.</mat-error>
+      </mat-form-field>
 
-    <div class="field">
-      <label for="person">Cliente</label>
-      <select id="person" formControlName="personId">
-        <option [ngValue]="null" disabled>— Selecciona cliente —</option>
-        <option *ngFor="let p of persons" [ngValue]="p.id">
-          {{ p.fullName || (p.firstName + ' ' + p.lastName) }}
-        </option>
-      </select>
-      <small class="hint" *ngIf="f.personId.touched && f.personId.invalid">
-        Selecciona un cliente.
-      </small>
-    </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Cliente</mat-label>
+        <mat-select formControlName="personId">
+          <mat-option [value]="null" disabled>— Selecciona cliente —</mat-option>
+          <mat-option *ngFor="let p of persons" [value]="p.id">
+            {{ p.fullName || (p.firstName + ' ' + p.lastName) }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f.personId.touched && f.personId.invalid">Selecciona un cliente.</mat-error>
+      </mat-form-field>
 
-    <!-- Agregar ítem -->
-    <h3 style="margin-top:18px">Agregar ítem</h3>
-    <div [formGroup]="detailForm" class="row addline">
-      <div class="col">
-        <label>Ítem</label>
-        <select formControlName="itemId">
-          <option [ngValue]="null" disabled>— Seleccionar —</option>
-          <option *ngFor="let it of items" [ngValue]="it.id">
-            {{ it.name }} ({{ it.price | number:'1.2-2' }})
-          </option>
-        </select>
+      <div class="spacer"></div>
+
+      <!-- Agregar ítem -->
+      <h3 class="section">Agregar ítem</h3>
+
+      <div [formGroup]="detailForm" class="detail-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Ítem</mat-label>
+          <mat-select formControlName="itemId">
+            <mat-option [value]="null" disabled>— Seleccionar —</mat-option>
+            <mat-option *ngFor="let it of items" [value]="it.id">
+              {{ it.name }} ({{ it.price | number:'1.2-2' }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cantidad</mat-label>
+          <input matInput type="number" min="1" formControlName="quantity">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Precio</mat-label>
+          <input matInput type="number" [value]="priceSig()" disabled>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Total línea</mat-label>
+          <input matInput type="number" [value]="lineTotalSig()" disabled>
+        </mat-form-field>
+
+        <div class="actions-right">
+          <button mat-raised-button color="primary" type="button" (click)="addDetail()" [disabled]="detailForm.invalid">
+            <mat-icon>add</mat-icon> Agregar
+          </button>
+        </div>
       </div>
 
-      <div class="col">
-        <label>Cantidad</label>
-        <input type="number" min="1" formControlName="quantity">
+      <!-- Carrito -->
+      <div *ngIf="pending.length; else emptyCart" class="table-wrap">
+        <table class="mat-elevation-z2 material-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th style="width:220px">Cantidad</th>
+              <th class="num">Precio</th>
+              <th class="num">Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of pending">
+              <td>{{ d.itemName }}</td>
+              <td>
+                <div class="qty">
+                  <button mat-stroked-button color="primary" type="button" (click)="dec(d.itemId)">−</button>
+                  <input class="qty-input" type="number" [value]="d.quantity" min="1"
+                         (change)="updateQty(d.itemId, $any($event.target).value)">
+                  <button mat-stroked-button color="primary" type="button" (click)="inc(d.itemId)">+</button>
+                </div>
+              </td>
+              <td class="num">{{ d.price | number:'1.2-2' }}</td>
+              <td class="num">{{ d.total | number:'1.2-2' }}</td>
+              <td class="right">
+                <button mat-button color="warn" type="button" (click)="removeDetail(d.itemId)">
+                  <mat-icon>delete</mat-icon> Quitar
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="3" class="num"><b>Total</b></td>
+              <td class="num"><b>{{ grandTotal() | number:'1.2-2' }}</b></td>
+              <td class="right">
+                <button mat-stroked-button type="button" (click)="clearPending()">Vaciar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+      <ng-template #emptyCart>
+        <p class="muted">Aún no agregaste ítems.</p>
+      </ng-template>
 
-      <div class="col readonly">
-        <label>Precio</label>
-        <input type="number" [value]="priceSig()" disabled>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || saving || pending.length===0">
+          Guardar
+        </button>
+        <button mat-button type="button" [routerLink]="'/orders'">Cancelar</button>
       </div>
-
-      <div class="col readonly">
-        <label>Total línea</label>
-        <input type="number" [value]="lineTotalSig()" disabled>
-      </div>
-
-      <div class="col actions">
-        <button type="button" (click)="addDetail()" [disabled]="detailForm.invalid">Agregar</button>
-      </div>
-    </div>
-
-    <!-- Carrito -->
-    <table class="grid" *ngIf="pending.length; else emptyCart" style="margin-top:10px">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th style="width:200px">Cantidad</th>
-          <th>Precio</th>
-          <th>Total</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let d of pending">
-          <td>{{ d.itemName }}</td>
-          <td class="num">
-            <div class="qty">
-              <button type="button" (click)="dec(d.itemId)">−</button>
-              <input type="number"
-                     [value]="d.quantity"
-                     min="1"
-                     (change)="updateQty(d.itemId, $any($event.target).value)">
-              <button type="button" (click)="inc(d.itemId)">+</button>
-            </div>
-          </td>
-          <td class="num">{{ d.price | number:'1.2-2' }}</td>
-          <td class="num">{{ d.total | number:'1.2-2' }}</td>
-          <td><button type="button" (click)="removeDetail(d.itemId)">Quitar</button></td>
-        </tr>
-
-        <tr>
-          <td colspan="3" class="num"><b>Total</b></td>
-          <td class="num"><b>{{ grandTotal() | number:'1.2-2' }}</b></td>
-          <td><button type="button" class="ghost" (click)="clearPending()">Vaciar</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <ng-template #emptyCart>
-      <p style="margin-top:6px">Aún no agregaste ítems.</p>
-    </ng-template>
-
-    <!-- Acciones -->
-    <div class="actions">
-      <button type="submit" [disabled]="form.invalid || saving || pending.length===0">Guardar</button>
-      <button type="button" class="ghost" [routerLink]="'/orders'">Cancelar</button>
-    </div>
-  </form>
-</div>
+    </form>
+  </mat-card-content>
+</mat-card>

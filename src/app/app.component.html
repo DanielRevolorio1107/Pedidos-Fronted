@@ -1,8 +1,8 @@
 <nav class="topbar">
-  <a routerLink="/orders" routerLinkActive="active">Pedidos</a>
+  <a routerLink="/orders" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Pedidos</a>
   <a routerLink="/people" routerLinkActive="active">Personas</a>
-  <a routerLink="/items"  routerLinkActive="active">Ítems</a>
-  <a routerLink="/orders/new">Nuevo</a>
+  <a routerLink="/items" routerLinkActive="active">Ítems</a>
+  <a routerLink="/orders/new" routerLinkActive="active">Nuevo</a>
 </nav>
-<router-outlet></router-outlet>
 
+<router-outlet></router-outlet>

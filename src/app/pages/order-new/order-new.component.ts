@@ -3,6 +3,13 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
 import { OrderService } from '../../services/order.service';
 import { PersonService, PersonDto } from '../../services/person.service';
 import { ItemService, ItemDto } from '../../services/item.service';
@@ -19,7 +26,9 @@ type PendingDetail = {
 @Component({
   selector: 'app-order-new',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [    CommonModule, RouterModule, ReactiveFormsModule,
+    MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+    MatButtonModule, MatIconModule],
   templateUrl: './order-new.component.html',
   styleUrls: ['./order-new.component.css'],
 })
@@ -154,7 +163,7 @@ export class OrderNewComponent implements OnInit {
   }
   clearPending() { this.pending = []; }
 
-  // guardar: crea orden y luego detalles
+  // guardar
   save() {
     if (this.form.invalid || this.pending.length === 0) {
       this.form.markAllAsTouched();
@@ -170,7 +179,7 @@ export class OrderNewComponent implements OnInit {
 
     this.orderSvc.create(dto).subscribe({
       next: (res: any) => {
-        const orderId = res?.id; // tu API devuelve { id } al crear
+        const orderId = res?.id; 
         const calls = this.pending.map(d =>
           this.detailSvc.create({
             orderId,
@@ -178,7 +187,6 @@ export class OrderNewComponent implements OnInit {
             quantity: d.quantity,
             price: d.price,
             total: d.total,
-            // createdBy: 1, // descomenta si tu API lo exige
           }).toPromise()
         );
 
@@ -198,7 +206,7 @@ export class OrderNewComponent implements OnInit {
     });
   }
 
-  // helpers para template
+  // helpers 
   get f()  { return this.form.controls; }
   get df() { return this.detailForm.controls; }
 }

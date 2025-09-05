@@ -1,57 +1,80 @@
-<div class="container">
-  <h2>Personas</h2>
+<mat-card>
+  <mat-card-title>Personas</mat-card-title>
+  <mat-card-subtitle *ngIf="!loading && !error">
+    Total: {{ list.length }} registro{{ list.length === 1 ? '' : 's' }}
+  </mat-card-subtitle>
 
-  <div *ngIf="loading">Cargando...</div>
-  <div *ngIf="!loading && error" class="err">{{ error }}</div>
+  <mat-card-content>
+    <div *ngIf="loading">Cargando…</div>
+    <div *ngIf="!loading && error" class="err">{{ error }}</div>
 
-  <!-- Formulario -->
-  <div class="card">
-    <h3>{{ editingId() == null ? 'Nueva persona' : 'Editar persona' }}</h3>
-    <form [formGroup]="form" (ngSubmit)="save()">
-      <div class="row">
-        <div class="col">
-          <label>Nombre</label>
-          <input type="text" formControlName="firstName">
-          <small class="hint" *ngIf="f.firstName.touched && f.firstName.invalid">Requerido</small>
+    <!-- Formulario -->
+    <div class="card form">
+      <h3 class="section">{{ editingId() == null ? 'Nueva persona' : 'Editar persona' }}</h3>
+      <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput type="text" formControlName="firstName">
+          <mat-error *ngIf="f.firstName.touched && f.firstName.invalid">Requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Apellido</mat-label>
+          <input matInput type="text" formControlName="lastName">
+          <mat-error *ngIf="f.lastName.touched && f.lastName.invalid">Requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email">
+          <mat-error *ngIf="f.email.touched && f.email.invalid">Email inválido</mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading">
+            <mat-icon>save</mat-icon> Guardar
+          </button>
+          <button mat-stroked-button type="button" (click)="startCreate()">
+            <mat-icon>add</mat-icon> Nuevo
+          </button>
+          <button mat-button type="button" (click)="cancel()">Cancelar</button>
         </div>
-        <div class="col">
-          <label>Apellido</label>
-          <input type="text" formControlName="lastName">
-          <small class="hint" *ngIf="f.lastName.touched && f.lastName.invalid">Requerido</small>
-        </div>
-        <div class="col">
-          <label>Email</label>
-          <input type="email" formControlName="email">
-          <small class="hint" *ngIf="f.email.touched && f.email.invalid">Email inválido</small>
-        </div>
-      </div>
+      </form>
+    </div>
 
-      <div class="actions">
-        <button type="submit" [disabled]="form.invalid || loading">Guardar</button>
-        <button type="button" class="ghost" (click)="startCreate()">Nuevo</button>
-        <button type="button" class="ghost" (click)="cancel()">Cancelar</button>
-      </div>
-    </form>
-  </div>
+    <!-- Tabla -->
+    <div class="table-wrap mat-elevation-z2" *ngIf="list.length; else empty">
+      <table class="material-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Email</th>
+            <th class="right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of list">
+            <td>{{ p.id }}</td>
+            <td>{{ p.firstName }}</td>
+            <td>{{ p.lastName }}</td>
+            <td>{{ p.email }}</td>
+            <td class="right">
+              <button mat-stroked-button color="primary" type="button" (click)="startEdit(p)">
+                <mat-icon>edit</mat-icon> Editar
+              </button>
+              <button mat-button color="warn" type="button" (click)="remove(p.id)">
+                <mat-icon>delete</mat-icon> Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <!-- Tabla -->
-  <table class="grid" *ngIf="list.length">
-    <thead>
-      <tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th></th></tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let p of list">
-        <td>{{ p.id }}</td>
-        <td>{{ p.firstName }}</td>
-        <td>{{ p.lastName }}</td>
-        <td>{{ p.email }}</td>
-        <td class="right">
-          <button type="button" (click)="startEdit(p)">Editar</button>
-          <button type="button" class="danger" (click)="remove(p.id)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p *ngIf="!list.length && !loading">No hay personas.</p>
-</div>
+    <ng-template #empty>
+      <p class="muted">No hay personas.</p>
+    </ng-template>
+  </mat-card-content>
+</mat-card>

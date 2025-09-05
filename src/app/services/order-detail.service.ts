@@ -8,7 +8,7 @@ export interface OrderDetailCreateDto {
   quantity: number;
   price: number;
   total: number;
-  createdBy?: number; // si tu API lo requiere
+  createdBy?: number; 
 }
 
 export interface OrderDetailDto {
@@ -20,7 +20,6 @@ export interface OrderDetailDto {
   total: number;
   createdAt?: string;
   updatedAt?: string | null;
-  // Campo opcional si tu API lo llena al incluir Item
   itemName?: string;
 }
 
@@ -29,16 +28,16 @@ export class OrderDetailService {
   private http = inject(HttpClient);
   private base = '/api/OrderDetail';
 
-  /** Crea un detalle (no muta el objeto que recibimos) */
+
   create(input: OrderDetailCreateDto): Observable<OrderDetailDto> {
     const payload: OrderDetailCreateDto = {
       ...input,
-      createdBy: input.createdBy ?? 1, // quita esto si tu backend NO lo requiere
+      createdBy: input.createdBy ?? 1, 
     };
     return this.http.post<OrderDetailDto>(this.base, payload);
   }
 
-  /** Elimina un detalle por id */
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }

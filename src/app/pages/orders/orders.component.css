@@ -1,7 +1,22 @@
-.container{padding:16px}
-table{width:100%;border-collapse:collapse;margin-top:12px}
-th,td{border:1px solid #eee;padding:8px}
-th{background:#f7f7f7;text-align:left}
-.num{text-align:right}
-.subgrid{width:100%;border-collapse:collapse;margin-top:8px}
-.subgrid th,.subgrid td{border:1px solid #ddd;padding:6px}
+.err{color:#b00020;margin:8px 0}
+
+.material-table{
+  width:100%;
+  border-collapse:collapse;
+  background:#fff;
+  border-radius:8px;
+  overflow:hidden;
+}
+.material-table thead tr{background:#f6f7f9}
+.material-table th,.material-table td{
+  padding:10px;
+  border-bottom:1px solid #eee;
+}
+.num{ text-align:right }
+.right{ text-align:right }
+
+.expand-cell{ background:#fafafa; padding:0 }
+.subcard{ padding:10px; background:#fff; border-radius:8px; margin:10px }
+.subtable{ width:100%; border-collapse:collapse }
+.subtable th,.subtable td{ padding:8px; border-bottom:1px solid #f0f0f0 }
+.muted{ color:#6b7280 }
