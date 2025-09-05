@@ -1,0 +1,48 @@
+<div class="container">
+  <h2>Ítems</h2>
+
+  <div *ngIf="loading">Cargando...</div>
+  <div *ngIf="!loading && error" class="err">{{ error }}</div>
+
+  <div class="card">
+    <h3>{{ editingId() == null ? 'Nuevo ítem' : 'Editar ítem' }}</h3>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="row">
+        <div class="col">
+          <label>Nombre</label>
+          <input type="text" formControlName="name">
+          <small class="hint" *ngIf="f.name.touched && f.name.invalid">Requerido</small>
+        </div>
+        <div class="col">
+          <label>Precio</label>
+          <input type="number" formControlName="price" min="0" step="0.01">
+          <small class="hint" *ngIf="f.price.touched && f.price.invalid">Precio inválido</small>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" [disabled]="form.invalid || loading">Guardar</button>
+        <button type="button" class="ghost" (click)="startCreate()">Nuevo</button>
+        <button type="button" class="ghost" (click)="cancel()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+
+  <table class="grid" *ngIf="list.length">
+    <thead>
+      <tr><th>ID</th><th>Nombre</th><th>Precio</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let it of list">
+        <td>{{ it.id }}</td>
+        <td>{{ it.name }}</td>
+        <td class="right">{{ it.price | number:'1.2-2' }}</td>
+        <td class="right">
+          <button type="button" (click)="startEdit(it)">Editar</button>
+          <button type="button" class="danger" (click)="remove(it.id)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!list.length && !loading">No hay ítems.</p>
+</div>

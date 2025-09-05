@@ -1,0 +1,16 @@
+.container{padding:16px;max-width:1000px}
+.err{color:#b00020;margin:8px 0}
+.card{border:1px solid #eee;border-radius:8px;padding:12px;margin:10px 0;background:#fafafa}
+.row{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.col{display:flex;flex-direction:column}
+label{font-weight:600;margin-bottom:6px}
+input{padding:8px;border:1px solid #ddd;border-radius:4px}
+.hint{color:#b00020;margin-top:4px}
+.actions{display:flex;gap:8px;margin-top:10px}
+button{padding:6px 10px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer}
+button.danger{border-color:#e57373;color:#b71c1c}
+button.ghost{background:#fff}
+.grid{width:100%;border-collapse:collapse;margin-top:10px}
+.grid th,.grid td{border:1px solid #eee;padding:8px}
+.grid th{background:#f7f7f7}
+.right{text-align:right}
